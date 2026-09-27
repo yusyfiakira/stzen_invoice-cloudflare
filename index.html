@@ -105,11 +105,13 @@
           <div class="border-b pb-4">
             <h3 class="font-bold text-gray-700 mb-2 text-sm">Invoice To:</h3>
             <div>
-              <label class="text-xs font-medium text-gray-600">Nama Client</label>
+              <label class="text-xs font-medium text-gray-600"
+                >Nama Client</label
+              >
               <input
                 type="text"
                 id="inputClientName"
-                value="Test"
+                value=""
                 class="w-full border rounded p-2 text-sm mt-1 focus:ring-2 focus:ring-green-500 outline-none"
               />
             </div>
@@ -120,7 +122,7 @@
               <input
                 type="text"
                 id="inputInstansi"
-                value="Mokachino Indihome"
+                value=""
                 class="w-full border rounded p-2 text-sm mt-1 focus:ring-2 focus:ring-green-500 outline-none"
               />
             </div>
@@ -133,7 +135,9 @@
             </h3>
             <div class="space-y-3">
               <div>
-                <label class="text-xs font-medium text-gray-600">Due Date</label>
+                <label class="text-xs font-medium text-gray-600"
+                  >Due Date</label
+                >
                 <div class="flex gap-2 mt-1">
                   <input
                     type="text"
@@ -190,7 +194,7 @@
                 <input
                   type="text"
                   id="inputDiscount"
-                  value="10000"
+                  value="0"
                   class="w-full border rounded p-2 text-sm mt-1 focus:ring-2 focus:ring-green-500 outline-none"
                   placeholder="Contoh: 10000 atau -"
                 />
@@ -272,15 +276,11 @@
                 <p
                   id="previewClientName"
                   class="text-base font-bold text-green-600 mb-0.5"
-                >
-                  Test
-                </p>
+                ></p>
                 <p
                   id="previewInstansi"
                   class="text-gray-700 font-medium text-xs"
-                >
-                  Mokachino Indihome
-                </p>
+                ></p>
               </div>
               <div>
                 <h4 class="font-bold text-xs mb-0.5">Invoice detail :</h4>
@@ -372,13 +372,20 @@
 
     <!-- JavaScript Logic -->
     <script>
-      let items = [
-        { name: "CapCut Pro 30 Hari", qty: 1, price: 15000 },
-        { name: "Zoom Premium 100P 30 Hari", qty: 1, price: 58000 }
-      ];
+      let items = [{ name: "0", qty: 1, price: 0 }];
       const monthNamesIndo = [
-        "JAN", "FEB", "MAR", "APR", "MEI", "JUN",
-        "JUL", "AGU", "SEP", "OKT", "NOV", "DES"
+        "JAN",
+        "FEB",
+        "MAR",
+        "APR",
+        "MEI",
+        "JUN",
+        "JUL",
+        "AGU",
+        "SEP",
+        "OKT",
+        "NOV",
+        "DES",
       ];
 
       function formatRupiah(number) {
@@ -422,7 +429,7 @@
           document.getElementById("cloudStatus").innerText = "⏳ Syncing...";
           const res = await fetch(
             `/api/counter?action=${action}&month=${monthCode}&t=${Date.now()}`,
-            { cache: 'no-store' }
+            { cache: "no-store" },
           );
           const data = await res.json();
 
@@ -440,7 +447,10 @@
           console.error("Cloud KV Error, fallback to local:", err);
           document.getElementById("cloudStatus").innerText = "⚠️ Offline Mode";
 
-          let localCounter = parseInt(localStorage.getItem("stzen_backup_counter") || "1", 10);
+          let localCounter = parseInt(
+            localStorage.getItem("stzen_backup_counter") || "1",
+            10,
+          );
           if (action === "increment") localCounter += 1;
           if (action === "reset") localCounter = 1;
           localStorage.setItem("stzen_backup_counter", localCounter);
