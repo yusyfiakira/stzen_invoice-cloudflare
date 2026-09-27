@@ -18,9 +18,11 @@
         font-family: "Poppins", sans-serif;
       }
 
+      /* Kunci ukuran presisi A4 agar MURNI 1 Halaman */
       .invoice-box {
         width: 210mm;
-        min-height: 297mm;
+        height: 297mm;
+        max-height: 297mm;
         background: white;
         position: relative;
         overflow: hidden;
@@ -31,10 +33,10 @@
         position: absolute;
         top: 0;
         right: 0;
-        width: 320px;
-        height: 140px;
+        width: 300px;
+        height: 130px;
         background: #5ebb73;
-        border-bottom-left-radius: 140px;
+        border-bottom-left-radius: 130px;
         z-index: 1;
       }
 
@@ -42,23 +44,23 @@
         position: absolute;
         bottom: 0;
         left: 0;
-        width: 260px;
-        height: 140px;
+        width: 240px;
+        height: 130px;
         background: #5ebb73;
-        border-top-right-radius: 140px;
+        border-top-right-radius: 130px;
         z-index: 1;
       }
 
       .paid-stamp {
         position: absolute;
         right: 10px;
-        top: -65px;
+        top: -60px;
         transform: rotate(-12deg);
         border: 4px solid rgba(114, 187, 138, 0.75);
         color: rgba(114, 187, 138, 0.85);
-        font-size: 36px;
+        font-size: 34px;
         font-weight: 800;
-        padding: 2px 20px;
+        padding: 2px 18px;
         border-radius: 12px;
         letter-spacing: 4px;
         pointer-events: none;
@@ -75,7 +77,7 @@
           display: none !important;
         }
         .invoice-box {
-          shadow: none;
+          box-shadow: none;
           margin: 0;
         }
       }
@@ -103,13 +105,11 @@
           <div class="border-b pb-4">
             <h3 class="font-bold text-gray-700 mb-2 text-sm">Invoice To:</h3>
             <div>
-              <label class="text-xs font-medium text-gray-600"
-                >Nama Client</label
-              >
+              <label class="text-xs font-medium text-gray-600">Nama Client</label>
               <input
                 type="text"
                 id="inputClientName"
-                value=""
+                value="Test"
                 class="w-full border rounded p-2 text-sm mt-1 focus:ring-2 focus:ring-green-500 outline-none"
               />
             </div>
@@ -120,7 +120,7 @@
               <input
                 type="text"
                 id="inputInstansi"
-                value=""
+                value="Mokachino Indihome"
                 class="w-full border rounded p-2 text-sm mt-1 focus:ring-2 focus:ring-green-500 outline-none"
               />
             </div>
@@ -133,11 +133,8 @@
             </h3>
             <div class="space-y-3">
               <div>
-                <label class="text-xs font-medium text-gray-600"
-                  >Due Date</label
-                >
+                <label class="text-xs font-medium text-gray-600">Due Date</label>
                 <div class="flex gap-2 mt-1">
-                  <!-- Input Tulis Manual (Auto Format 27092026 -> 27/09/2026) -->
                   <input
                     type="text"
                     id="inputDueDate"
@@ -145,7 +142,6 @@
                     maxlength="10"
                     class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                   />
-                  <!-- Input Picker Kalender Native -->
                   <input
                     type="date"
                     id="inputDatePicker"
@@ -194,7 +190,7 @@
                 <input
                   type="text"
                   id="inputDiscount"
-                  value="0"
+                  value="10000"
                   class="w-full border rounded p-2 text-sm mt-1 focus:ring-2 focus:ring-green-500 outline-none"
                   placeholder="Contoh: 10000 atau -"
                 />
@@ -249,9 +245,10 @@
       >
         <div
           id="invoice-template"
-          class="invoice-box p-12 shadow-2xl my-4 text-gray-800 flex flex-col justify-between"
+          class="invoice-box p-10 shadow-2xl my-2 text-gray-800 flex flex-col justify-between"
         >
-          <div>
+          <!-- HEADER & TABLE AREA -->
+          <div class="flex-grow flex flex-col">
             <div class="top-right-curve">
               <span
                 class="absolute top-8 right-12 text-white font-extrabold text-4xl tracking-wider"
@@ -259,87 +256,93 @@
               >
             </div>
 
-            <div class="flex items-center gap-3 mb-12 relative z-10">
+            <div class="flex items-center gap-3 mb-8 relative z-10">
               <div
                 id="logoContainer"
-                class="h-14 flex items-center justify-center"
+                class="h-12 flex items-center justify-center"
               ></div>
               <span class="text-2xl font-bold text-green-600 tracking-wide"
                 >st.zen</span
               >
             </div>
 
-            <div class="grid grid-cols-2 gap-8 mb-10 relative z-10">
+            <div class="grid grid-cols-2 gap-8 mb-8 relative z-10">
               <div>
-                <h4 class="font-bold text-base mb-1">Invoice to :</h4>
+                <h4 class="font-bold text-sm mb-1">Invoice to :</h4>
                 <p
                   id="previewClientName"
-                  class="text-xl font-bold text-green-600 mb-0.5"
-                ></p>
+                  class="text-lg font-bold text-green-600 mb-0.5"
+                >
+                  Test
+                </p>
                 <p
                   id="previewInstansi"
-                  class="text-gray-700 font-medium text-sm"
-                ></p>
+                  class="text-gray-700 font-medium text-xs"
+                >
+                  Mokachino Indihome
+                </p>
               </div>
               <div>
-                <h4 class="font-bold text-base mb-1">Invoice detail :</h4>
-                <div class="space-y-0.5 text-gray-700 font-medium text-sm">
+                <h4 class="font-bold text-sm mb-1">Invoice detail :</h4>
+                <div class="space-y-0.5 text-gray-700 font-medium text-xs">
                   <p>Number : <span id="previewInvoiceNum">Loading...</span></p>
                   <p>Due date : <span id="previewDueDate">27/09/2026</span></p>
                 </div>
               </div>
             </div>
 
-            <div class="relative z-10 mb-6">
+            <!-- Tabel Produk dengan Kontainer Terkunci -->
+            <div class="relative z-10 mb-4 flex-grow overflow-hidden">
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr
                     class="bg-[#5ebb73] text-white font-bold text-xs uppercase tracking-wider"
                   >
-                    <th class="p-2.5 text-center w-10">NO</th>
-                    <th class="p-2.5">PRODUCT</th>
-                    <th class="p-2.5 text-center w-16">QTY</th>
-                    <th class="p-2.5 text-center w-24">PRICE</th>
-                    <th class="p-2.5 text-center w-24">TOTAL</th>
+                    <th class="p-2 text-center w-10">NO</th>
+                    <th class="p-2">PRODUCT</th>
+                    <th class="p-2 text-center w-16">QTY</th>
+                    <th class="p-2 text-center w-20">PRICE</th>
+                    <th class="p-2 text-center w-20">TOTAL</th>
                   </tr>
                 </thead>
                 <tbody
                   id="previewTableBody"
-                  class="divide-y divide-gray-200 font-medium text-sm text-gray-700"
+                  class="divide-y divide-gray-200 font-medium text-xs text-gray-700"
                 ></tbody>
               </table>
             </div>
           </div>
 
-          <div>
-            <div class="relative z-10 flex justify-end mb-12">
+          <!-- FOOTER & TOTALS AREA (TERKUNCI DI BAWAH) -->
+          <div class="shrink-0 pt-2">
+            <div class="relative z-10 flex justify-end mb-8">
               <div class="w-1/2 relative">
                 <div id="previewPaidStamp" class="paid-stamp">PAID</div>
                 <div
-                  class="space-y-1 text-right font-bold text-gray-700 text-sm pr-2"
+                  class="space-y-1 text-right font-bold text-gray-700 text-xs pr-2"
                 >
                   <div class="flex justify-between">
                     <span>Total</span>
-                    <span id="previewSubtotal">30.000</span>
+                    <span id="previewSubtotal">0</span>
                   </div>
                   <div class="flex justify-between">
                     <span>Discount</span>
-                    <span id="previewDiscount">10.000</span>
+                    <span id="previewDiscount">0</span>
                   </div>
                 </div>
 
                 <div
-                  class="mt-3 bg-[#5ebb73] text-white flex justify-between items-center px-4 py-2 font-bold text-base rounded-sm"
+                  class="mt-2 bg-[#5ebb73] text-white flex justify-between items-center px-4 py-2 font-bold text-sm rounded-sm"
                 >
                   <span>TOTAL</span>
-                  <span id="previewGrandTotal">RP20.000,00</span>
+                  <span id="previewGrandTotal">RP0,00</span>
                 </div>
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-8 items-end relative z-10 pb-4">
-              <div class="space-y-1.5 text-xs font-semibold text-gray-700">
-                <h4 class="font-bold text-sm mb-2">Payment Info :</h4>
+            <div class="grid grid-cols-2 gap-8 items-end relative z-10 pb-2">
+              <div class="space-y-1 text-[11px] font-semibold text-gray-700">
+                <h4 class="font-bold text-xs mb-1.5">Payment Info :</h4>
                 <p class="flex items-center gap-2">
                   <span class="text-green-600">📞</span> +62882-0034-57148
                 </p>
@@ -354,9 +357,9 @@
               <div class="text-center">
                 <div
                   id="signatureContainer"
-                  class="h-16 flex items-center justify-center mb-1"
+                  class="h-12 flex items-center justify-center mb-1"
                 ></div>
-                <div class="w-48 mx-auto border-b border-gray-300 mb-1"></div>
+                <div class="w-40 mx-auto border-b border-gray-300 mb-1"></div>
                 <p class="font-medium text-xs text-gray-700">Zen.</p>
               </div>
             </div>
@@ -369,20 +372,13 @@
 
     <!-- JavaScript Logic -->
     <script>
-      let items = [{ name: "", qty: 1, price: 0 }];
+      let items = [
+        { name: "CapCut Pro 30 Hari", qty: 1, price: 15000 },
+        { name: "Zoom Premium 100P 30 Hari", qty: 1, price: 58000 }
+      ];
       const monthNamesIndo = [
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MEI",
-        "JUN",
-        "JUL",
-        "AGU",
-        "SEP",
-        "OKT",
-        "NOV",
-        "DES",
+        "JAN", "FEB", "MAR", "APR", "MEI", "JUN",
+        "JUL", "AGU", "SEP", "OKT", "NOV", "DES"
       ];
 
       function formatRupiah(number) {
@@ -410,7 +406,6 @@
         return `${day}/${month}/${year}`;
       }
 
-      // Format ISO Date (YYYY-MM-DD) ke DD/MM/YYYY
       function formatIsoToIndo(isoStr) {
         if (!isoStr) return "";
         const parts = isoStr.split("-");
@@ -480,24 +475,24 @@
 
         items.forEach((item, index) => {
           container.innerHTML += `
-                    <div class="p-2 border rounded bg-gray-50 space-y-2 relative">
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-bold text-gray-500">Item #${index + 1}</span>
-                            ${items.length > 1 ? `<button type="button" onclick="removeItemRow(${index})" class="text-xs text-red-500 font-bold hover:underline">Hapus</button>` : ""}
-                        </div>
-                        <input type="text" value="${item.name}" oninput="updateItemData(${index}, 'name', this.value)" class="w-full border rounded p-1 text-xs" placeholder="Nama Produk">
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="text-[10px] font-medium text-gray-500">QTY</label>
-                                <input type="number" min="1" value="${item.qty}" oninput="updateItemData(${index}, 'qty', this.value)" class="w-full border rounded p-1 text-xs">
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-medium text-gray-500">Harga (Rp)</label>
-                                <input type="number" value="${item.price}" oninput="updateItemData(${index}, 'price', this.value)" class="w-full border rounded p-1 text-xs">
-                            </div>
-                        </div>
+            <div class="p-2 border rounded bg-gray-50 space-y-2 relative">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-gray-500">Item #${index + 1}</span>
+                    ${items.length > 1 ? `<button type="button" onclick="removeItemRow(${index})" class="text-xs text-red-500 font-bold hover:underline">Hapus</button>` : ""}
+                </div>
+                <input type="text" value="${item.name}" oninput="updateItemData(${index}, 'name', this.value)" class="w-full border rounded p-1 text-xs" placeholder="Nama Produk">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[10px] font-medium text-gray-500">QTY</label>
+                        <input type="number" min="1" value="${item.qty}" oninput="updateItemData(${index}, 'qty', this.value)" class="w-full border rounded p-1 text-xs">
                     </div>
-                `;
+                    <div>
+                        <label class="text-[10px] font-medium text-gray-500">Harga (Rp)</label>
+                        <input type="number" value="${item.price}" oninput="updateItemData(${index}, 'price', this.value)" class="w-full border rounded p-1 text-xs">
+                    </div>
+                </div>
+            </div>
+          `;
         });
       }
 
@@ -517,19 +512,20 @@
             itemTotal >= 1000 ? `${itemTotal / 1000}K` : itemTotal;
 
           tbody.innerHTML += `
-                    <tr>
-                        <td class="p-2.5 text-center">${index + 1}</td>
-                        <td class="p-2.5">${item.name || "-"}</td>
-                        <td class="p-2.5 text-center">${item.qty}</td>
-                        <td class="p-2.5 text-center">${priceLabel}</td>
-                        <td class="p-2.5 text-center">${totalLabel}</td>
-                    </tr>
-                `;
+            <tr>
+                <td class="p-2 text-center">${index + 1}</td>
+                <td class="p-2">${item.name || "-"}</td>
+                <td class="p-2 text-center">${item.qty}</td>
+                <td class="p-2 text-center">${priceLabel}</td>
+                <td class="p-2 text-center">${totalLabel}</td>
+            </tr>
+          `;
         });
 
-        const minRows = 5;
+        // Selalu jaga minimal 4 baris agar visual rapi
+        const minRows = 4;
         for (let i = items.length; i < minRows; i++) {
-          tbody.innerHTML += `<tr class="h-9"><td></td><td></td><td></td><td></td><td></td></tr>`;
+          tbody.innerHTML += `<tr class="h-8"><td></td><td></td><td></td><td></td><td></td></tr>`;
         }
 
         calculateTotals(subtotalCalculated);
@@ -578,11 +574,10 @@
         renderPreviewTable();
       }
 
-      // LOGIKA AUTO-FORMATTING TANGGAL (27092026 -> 27/09/2026)
       document.getElementById("inputDueDate").addEventListener("input", (e) => {
-        let val = e.target.value.replace(/\D/g, ""); // Hapus semua karakter non-angka
+        let val = e.target.value.replace(/\D/g, "");
 
-        if (val.length > 8) val = val.substring(0, 8); // Maksimal 8 digit
+        if (val.length > 8) val = val.substring(0, 8);
 
         let formatted = val;
         if (val.length >= 5) {
@@ -596,7 +591,6 @@
         syncInvoiceNumber();
       });
 
-      // LOGIKA KALENDER PICKER
       document
         .getElementById("inputDatePicker")
         .addEventListener("change", (e) => {
@@ -670,12 +664,10 @@
       }
 
       async function init() {
-        // Default Due Date Hari Ini
         const today = getTodayFormatted();
         document.getElementById("inputDueDate").value = today;
         document.getElementById("previewDueDate").innerText = today;
 
-        // Set default date picker value (YYYY-MM-DD)
         const dateObj = new Date();
         const yyyy = dateObj.getFullYear();
         const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
@@ -686,12 +678,12 @@
         autoLoadImage(
           "logoContainer",
           "logostzen",
-          `<div class="w-12 h-12 border-2 border-green-500 text-green-600 font-extrabold text-xs flex items-center justify-center text-center rounded">ST.<br>ZEN</div>`,
+          `<div class="w-10 h-10 border-2 border-green-500 text-green-600 font-extrabold text-xs flex items-center justify-center text-center rounded">ST.<br>ZEN</div>`,
         );
         autoLoadImage(
           "signatureContainer",
           "ttd",
-          `<span class="font-serif italic text-3xl font-bold tracking-wider text-gray-800">yeyell</span>`,
+          `<span class="font-serif italic text-2xl font-bold tracking-wider text-gray-800">yeyell</span>`,
         );
 
         renderInputForm();
