@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoice Generator - st.zen</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- html2pdf.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+
+      /* A4 Canvas Ratio */
+      .invoice-box {
+        width: 210mm;
+        min-height: 297mm;
+        background: white;
+        position: relative;
+        overflow: hidden;
+        box-sizing: border-box;
+      }
+
+      /* Exact Curved Shapes */
+      .top-right-curve {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 320px;
+        height: 140px;
+        background: #5ebb73;
+        border-bottom-left-radius: 140px;
+        z-index: 1;
+      }
+
+      .bottom-left-curve {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 260px;
+        height: 140px;
+        background: #5ebb73;
+        border-top-right-radius: 140px;
+        z-index: 1;
+      }
+
+      /* Authentic Paid Stamp */
+      .paid-stamp {
+        position: absolute;
+        right: 10px;
+        top: -65px;
+        transform: rotate(-12deg);
+        border: 4px solid rgba(114, 187, 138, 0.75);
+        color: rgba(114, 187, 138, 0.85);
+        font-size: 36px;
+        font-weight: 800;
+        padding: 2px 20px;
+        border-radius: 12px;
+        letter-spacing: 4px;
+        pointer-events: none;
+        z-index: 20;
+        background-color: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(1px);
+      }
+
+      /* Print Style */
+      @media print {
+        body {
+          background: white;
+        }
+        .no-print {
+          display: none !important;
+        }
+        .invoice-box {
+          shadow: none;
+          margin: 0;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-200 min-h-screen">
+    <div class="flex flex-col lg:flex-row min-h-screen">
+      <!-- SIDEBAR FORM INPUT (KIRI) -->
+      <div
+        class="w-full lg:w-1/3 bg-white p-6 shadow-xl no-print overflow-y-auto max-h-screen"
+      >
+        <h2
+          class="text-2xl font-extrabold text-gray-800 mb-6 flex items-center gap-2"
+        >
+          ⚡ Instant Invoice
+        </h2>
+
+        <form id="invoiceForm" class="space-y-5" onsubmit="return false;">
+          <!-- Info Pembeli -->
+          <div class="border-b pb-4">
+            <h3 class="font-bold text-gray-700 mb-2 text-sm">Invoice To:</h3>
+            <div>
+              <label class="text-xs font-medium text-gray-600"
+                >Nama Client</label
+              >
+              <input
+                type="text"
+                id="inputClientName"
+                value=""
+                class="w-full border rounded p-2 text-sm mt-1 focus:ring-2 focus:ring-green-500 outline-none"
+              />
+            </div>
+            <div class="mt-2">
+              <label class="text-xs font-medium text-gray-600"
+                >Nama Instansi / Perusahaan</label
+              >
+              <input
+                type="text"
+                id="inputInstansi"
+                value=""
+                class="w-full border rounded p-2 text-sm mt-1 focus:ring-2 focus:ring-green-500 outline-none"
+              />
+            </div>
+          </div>
+
+          <!-- Info Detail -->
+          <div class="border-b pb-4">
+            <h3 class="font-bold text-gray-700 mb-2 text-sm">
+              Detail Invoice:
+            </h3>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-xs font-medium text-gray-600"
+                  >Due Date (DD/MM/YYYY)</label
+                >
+                <input
+                  type="text"
+                  id="inputDueDate"
+                  class="w-full border rounded p-2 text-sm mt-1 focus:ring-2 focus:ring-green-500 outline-none"
+                />
+              </div>
+              <div>
+                <label class="text-xs font-medium text-gray-600"
+                  >Invoice Number</label
+                >
+                <input
+                  type="text"
+                  id="inputInvoiceNum"
+                  class="w-full border bg-white rounded p-2 text-sm mt-1 text-gray-800 font-bold focus:ring-2 focus:ring-green-500 outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Item List -->
+          <div class="border-b pb-4">
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="font-bold text-gray-700 text-sm">Daftar Produk:</h3>
+              <button
+                type="button"
+                onclick="addItemRow()"
+                class="text-xs bg-green-600 text-white font-semibold px-2 py-1 rounded hover:bg-green-700 transition"
+              >
+                + Tambah Item
+              </button>
+            </div>
+            <div id="itemsContainer" class="space-y-3">
+              <!-- Rows injected by JS -->
+            </div>
+          </div>
+
+          <!-- Total & Diskon -->
+          <div class="border-b pb-4">
+            <h3 class="font-bold text-gray-700 mb-2 text-sm">
+              Pembayaran & Diskon:
+            </h3>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-xs font-medium text-gray-600"
+                  >Discount (Nominal/Rp)</label
+                >
+                <input
+                  type="text"
+                  id="inputDiscount"
+                  value="10000"
+                  class="w-full border rounded p-2 text-sm mt-1 focus:ring-2 focus:ring-green-500 outline-none"
+                  placeholder="Contoh: 10000 atau -"
+                />
+              </div>
+              <div class="flex items-center pt-5">
+                <input
+                  type="checkbox"
+                  id="checkPaid"
+                  checked
+                  class="w-4 h-4 text-green-600 rounded"
+                />
+                <label
+                  for="checkPaid"
+                  class="text-xs font-semibold text-gray-700 ml-2"
+                  >Stempel PAID</label
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="pt-2 space-y-2">
+            <button
+              type="button"
+              onclick="downloadPDF()"
+              class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-md transition flex items-center justify-center gap-2"
+            >
+              📥 Download PDF Instant
+            </button>
+            <button
+              type="button"
+              onclick="confirmNewInvoice()"
+              class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-2 rounded-lg text-sm transition"
+            >
+              ➕ Selesaikan & Lanjut Invoice Baru (+1)
+            </button>
+            <button
+              type="button"
+              onclick="resetCounterTo1()"
+              class="w-full text-xs text-red-500 hover:underline pt-2 text-center block"
+            >
+              ⚙️ Reset Nomor Urut Bulan Ini ke 001
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- LIVE PREVIEW CANVAS (KANAN) -->
+      <div
+        class="w-full lg:w-2/3 p-4 flex justify-center items-start overflow-x-auto"
+      >
+        <div
+          id="invoice-template"
+          class="invoice-box p-12 shadow-2xl my-4 text-gray-800 flex flex-col justify-between"
+        >
+          <div>
+            <!-- Curved Top Right -->
+            <div class="top-right-curve">
+              <span
+                class="absolute top-8 right-12 text-white font-extrabold text-4xl tracking-wider"
+                >Invoice</span
+              >
+            </div>
+
+            <!-- Header Logo & Brand -->
+            <div class="flex items-center gap-3 mb-12 relative z-10">
+              <div
+                id="logoContainer"
+                class="h-14 flex items-center justify-center"
+              >
+                <!-- Dynamic Auto Load Image -->
+              </div>
+              <span class="text-2xl font-bold text-green-600 tracking-wide"
+                >st.zen</span
+              >
+            </div>
+
+            <!-- Client & Invoice Detail -->
+            <div class="grid grid-cols-2 gap-8 mb-10 relative z-10">
+              <div>
+                <h4 class="font-bold text-base mb-1">Invoice to :</h4>
+                <p
+                  id="previewClientName"
+                  class="text-xl font-bold text-green-600 mb-0.5"
+                ></p>
+                <p
+                  id="previewInstansi"
+                  class="text-gray-700 font-medium text-sm"
+                ></p>
+              </div>
+              <div>
+                <h4 class="font-bold text-base mb-1">Invoice detail :</h4>
+                <div class="space-y-0.5 text-gray-700 font-medium text-sm">
+                  <p>Number : <span id="previewInvoiceNum">001-SEP26</span></p>
+                  <p>Due date : <span id="previewDueDate">27/09/2026</span></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Product Table -->
+            <div class="relative z-10 mb-6">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr
+                    class="bg-[#5ebb73] text-white font-bold text-xs uppercase tracking-wider"
+                  >
+                    <th class="p-2.5 text-center w-10">NO</th>
+                    <th class="p-2.5">PRODUCT</th>
+                    <th class="p-2.5 text-center w-16">QTY</th>
+                    <th class="p-2.5 text-center w-24">PRICE</th>
+                    <th class="p-2.5 text-center w-24">TOTAL</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="previewTableBody"
+                  class="divide-y divide-gray-200 font-medium text-sm text-gray-700"
+                >
+                  <!-- Dynamic Rows injected by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Bottom Section (Totals, Stamp, Signature, Footer) -->
+          <div>
+            <!-- Subtotal & Grand Total Bar -->
+            <div class="relative z-10 flex justify-end mb-12">
+              <div class="w-1/2 relative">
+                <!-- Paid Stamp Overlay -->
+                <div id="previewPaidStamp" class="paid-stamp">PAID</div>
+
+                <div
+                  class="space-y-1 text-right font-bold text-gray-700 text-sm pr-2"
+                >
+                  <div class="flex justify-between">
+                    <span>Total</span>
+                    <span id="previewSubtotal">30.000</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span>Discount</span>
+                    <span id="previewDiscount">10.000</span>
+                  </div>
+                </div>
+
+                <!-- Grand Total Bar -->
+                <div
+                  class="mt-3 bg-[#5ebb73] text-white flex justify-between items-center px-4 py-2 font-bold text-base rounded-sm"
+                >
+                  <span>TOTAL</span>
+                  <span id="previewGrandTotal">RP20.000,00</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer Info & Signature -->
+            <div class="grid grid-cols-2 gap-8 items-end relative z-10 pb-4">
+              <!-- Payment Info -->
+              <div class="space-y-1.5 text-xs font-semibold text-gray-700">
+                <h4 class="font-bold text-sm mb-2">Payment Info :</h4>
+                <p class="flex items-center gap-2">
+                  <span class="text-green-600">📞</span> +62882-0034-57148
+                </p>
+                <p class="flex items-center gap-2">
+                  <span class="text-green-600">✉️</span> akieera.store@gmail.com
+                </p>
+                <p class="flex items-center gap-2">
+                  <span class="text-green-600">📍</span> Indonesia
+                </p>
+              </div>
+
+              <!-- Signature Container -->
+              <div class="text-center">
+                <div
+                  id="signatureContainer"
+                  class="h-16 flex items-center justify-center mb-1"
+                >
+                  <!-- Dynamic Auto Load Signature -->
+                </div>
+                <div class="w-48 mx-auto border-b border-gray-300 mb-1"></div>
+                <p class="font-medium text-xs text-gray-700">Zen.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Curved Bottom Left -->
+          <div class="bottom-left-curve"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+      let items = [
+        { name: "CapCut Pro 1 Minggu", qty: 1, price: 15000 },
+        { name: "Me", qty: 1, price: 15000 },
+      ];
+
+      const monthNamesIndo = [
+        "JAN",
+        "FEB",
+        "MAR",
+        "APR",
+        "MEI",
+        "JUN",
+        "JUL",
+        "AGU",
+        "SEP",
+        "OKT",
+        "NOV",
+        "DES",
+      ];
+
+      function formatRupiah(number) {
+        return new Intl.NumberFormat("id-ID").format(number);
+      }
+
+      // Ekstrak Kode Bulan & 2-Digit Tahun dari Tanggal (DD/MM/YYYY)
+      function getMonthCodeFromDate(dateStr) {
+        const parts = dateStr.split("/");
+        if (parts.length === 3) {
+          const monthIdx = parseInt(parts[1], 10) - 1;
+          const year2Digit = parts[2].trim().slice(-2); // Mengambil 2 digit tahun (2026 -> 26)
+          if (monthIdx >= 0 && monthIdx < 12) {
+            return `${monthNamesIndo[monthIdx]}${year2Digit}`;
+          }
+        }
+        const now = new Date();
+        return `${monthNamesIndo[now.getMonth()]}${now.getFullYear().toString().slice(-2)}`;
+      }
+
+      function getTodayFormatted() {
+        const date = new Date();
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      }
+
+      function getOrSetInvoiceNumber(dueDateStr, increment = false) {
+        const monthCode = getMonthCodeFromDate(dueDateStr);
+        let savedMonth = localStorage.getItem("stzen_invoice_month");
+        let savedCounter = parseInt(
+          localStorage.getItem("stzen_invoice_counter") || "1",
+          10,
+        );
+
+        if (savedMonth !== monthCode) {
+          savedCounter = 1;
+          localStorage.setItem("stzen_invoice_month", monthCode);
+          localStorage.setItem("stzen_invoice_counter", "1");
+        } else if (increment) {
+          savedCounter += 1;
+          localStorage.setItem(
+            "stzen_invoice_counter",
+            savedCounter.toString(),
+          );
+        }
+
+        const formattedNum = String(savedCounter).padStart(3, "0");
+        return `${formattedNum}-${monthCode}`;
+      }
+
+      function resetCounterTo1() {
+        if (
+          confirm("Yakin mau reset nomor invoice bulan ini kembali ke 001?")
+        ) {
+          const dueDate = document.getElementById("inputDueDate").value;
+          const monthCode = getMonthCodeFromDate(dueDate);
+          localStorage.setItem("stzen_invoice_month", monthCode);
+          localStorage.setItem("stzen_invoice_counter", "1");
+
+          const newInv = `001-${monthCode}`;
+          document.getElementById("inputInvoiceNum").value = newInv;
+          document.getElementById("previewInvoiceNum").innerText = newInv;
+          alert("Nomor invoice berhasil di-reset ke 001!");
+        }
+      }
+
+      function renderInputForm() {
+        const container = document.getElementById("itemsContainer");
+        container.innerHTML = "";
+
+        items.forEach((item, index) => {
+          container.innerHTML += `
+                    <div class="p-2 border rounded bg-gray-50 space-y-2 relative">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-gray-500">Item #${index + 1}</span>
+                            ${items.length > 1 ? `<button type="button" onclick="removeItemRow(${index})" class="text-xs text-red-500 font-bold hover:underline">Hapus</button>` : ""}
+                        </div>
+                        <input type="text" value="${item.name}" oninput="updateItemData(${index}, 'name', this.value)" class="w-full border rounded p-1 text-xs" placeholder="Nama Produk">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[10px] font-medium text-gray-500">QTY</label>
+                                <input type="number" min="1" value="${item.qty}" oninput="updateItemData(${index}, 'qty', this.value)" class="w-full border rounded p-1 text-xs">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-medium text-gray-500">Harga (Rp)</label>
+                                <input type="number" value="${item.price}" oninput="updateItemData(${index}, 'price', this.value)" class="w-full border rounded p-1 text-xs">
+                            </div>
+                        </div>
+                    </div>
+                `;
+        });
+      }
+
+      function renderPreviewTable() {
+        const tbody = document.getElementById("previewTableBody");
+        tbody.innerHTML = "";
+
+        let subtotalCalculated = 0;
+
+        items.forEach((item, index) => {
+          const itemTotal = item.qty * item.price;
+          subtotalCalculated += itemTotal;
+
+          const priceLabel =
+            item.price >= 1000 ? `${item.price / 1000}K` : item.price;
+          const totalLabel =
+            itemTotal >= 1000 ? `${itemTotal / 1000}K` : itemTotal;
+
+          tbody.innerHTML += `
+                    <tr>
+                        <td class="p-2.5 text-center">${index + 1}</td>
+                        <td class="p-2.5">${item.name || "-"}</td>
+                        <td class="p-2.5 text-center">${item.qty}</td>
+                        <td class="p-2.5 text-center">${priceLabel}</td>
+                        <td class="p-2.5 text-center">${totalLabel}</td>
+                    </tr>
+                `;
+        });
+
+        const minRows = 5;
+        for (let i = items.length; i < minRows; i++) {
+          tbody.innerHTML += `<tr class="h-9"><td></td><td></td><td></td><td></td><td></td></tr>`;
+        }
+
+        calculateTotals(subtotalCalculated);
+      }
+
+      function updateItemData(index, key, value) {
+        if (key === "qty" || key === "price") {
+          items[index][key] = parseFloat(value) || 0;
+        } else {
+          items[index][key] = value;
+        }
+        renderPreviewTable();
+      }
+
+      function calculateTotals(subtotal) {
+        document.getElementById("previewSubtotal").innerText =
+          formatRupiah(subtotal);
+
+        const discountRaw = document
+          .getElementById("inputDiscount")
+          .value.trim();
+        let discountVal = parseFloat(discountRaw.replace(/[^0-9]/g, "")) || 0;
+
+        if (discountRaw === "-" || discountRaw === "") {
+          document.getElementById("previewDiscount").innerText = "-";
+          discountVal = 0;
+        } else {
+          document.getElementById("previewDiscount").innerText =
+            formatRupiah(discountVal);
+        }
+
+        const grandTotal = Math.max(0, subtotal - discountVal);
+        document.getElementById("previewGrandTotal").innerText =
+          `RP${formatRupiah(grandTotal)},00`;
+      }
+
+      function addItemRow() {
+        items.push({ name: "", qty: 1, price: 0 });
+        renderInputForm();
+        renderPreviewTable();
+      }
+
+      function removeItemRow(index) {
+        items.splice(index, 1);
+        renderInputForm();
+        renderPreviewTable();
+      }
+
+      document.getElementById("inputDueDate").addEventListener("input", (e) => {
+        const val = e.target.value;
+        document.getElementById("previewDueDate").innerText = val || "-";
+
+        const currentInv = getOrSetInvoiceNumber(val, false);
+        document.getElementById("inputInvoiceNum").value = currentInv;
+        document.getElementById("previewInvoiceNum").innerText = currentInv;
+      });
+
+      document
+        .getElementById("inputInvoiceNum")
+        .addEventListener("input", (e) => {
+          document.getElementById("previewInvoiceNum").innerText =
+            e.target.value || "-";
+        });
+
+      document.getElementById("inputDiscount").addEventListener("input", () => {
+        const currentSubtotal = items.reduce(
+          (sum, item) => sum + item.qty * item.price,
+          0,
+        );
+        calculateTotals(currentSubtotal);
+      });
+
+      const bindings = [
+        { input: "inputClientName", preview: "previewClientName" },
+        { input: "inputInstansi", preview: "previewInstansi" },
+      ];
+
+      bindings.forEach((b) => {
+        document.getElementById(b.input).addEventListener("input", (e) => {
+          document.getElementById(b.preview).innerText = e.target.value || "-";
+        });
+      });
+
+      document.getElementById("checkPaid").addEventListener("change", (e) => {
+        document.getElementById("previewPaidStamp").style.display = e.target
+          .checked
+          ? "block"
+          : "none";
+      });
+
+      function autoLoadImage(containerId, baseName, fallbackHTML) {
+        const container = document.getElementById(containerId);
+        const extensions = ["png", "jpg", "jpeg", "PNG", "JPG", "JPEG"];
+        let loaded = false;
+
+        function tryExtension(index) {
+          if (index >= extensions.length) {
+            if (!loaded) container.innerHTML = fallbackHTML;
+            return;
+          }
+
+          const imgPath = `${baseName}.${extensions[index]}`;
+          const img = new Image();
+          img.src = imgPath;
+
+          img.onload = function () {
+            loaded = true;
+            container.innerHTML = `<img src="${imgPath}" class="max-h-full max-w-full object-contain">`;
+          };
+
+          img.onerror = function () {
+            tryExtension(index + 1);
+          };
+        }
+
+        tryExtension(0);
+      }
+
+      function init() {
+        const today = getTodayFormatted();
+        document.getElementById("inputDueDate").value = today;
+        document.getElementById("previewDueDate").innerText = today;
+
+        const currentInv = getOrSetInvoiceNumber(today, false);
+        document.getElementById("inputInvoiceNum").value = currentInv;
+        document.getElementById("previewInvoiceNum").innerText = currentInv;
+
+        autoLoadImage(
+          "logoContainer",
+          "logostzen",
+          `
+                <div class="w-12 h-12 border-2 border-green-500 text-green-600 font-extrabold text-xs flex items-center justify-center text-center rounded">
+                    ST.<br>ZEN
+                </div>
+            `,
+        );
+
+        autoLoadImage(
+          "signatureContainer",
+          "ttd",
+          `
+                <span class="font-serif italic text-3xl font-bold tracking-wider text-gray-800">ttd</span>
+            `,
+        );
+
+        renderInputForm();
+        renderPreviewTable();
+      }
+
+      function confirmNewInvoice() {
+        if (
+          confirm(
+            "Selesaikan transaksi ini & lanjut ke invoice baru (+1 nomor)?",
+          )
+        ) {
+          const dueDate = document.getElementById("inputDueDate").value;
+          const nextInv = getOrSetInvoiceNumber(dueDate, true);
+          document.getElementById("inputInvoiceNum").value = nextInv;
+          document.getElementById("previewInvoiceNum").innerText = nextInv;
+          alert(`Nomor Invoice Baru Tersimpan: ${nextInv}`);
+        }
+      }
+
+      // Export PDF dengan Penamaan: KODETAHUN-INVOICEKEBERAPA_INVOICE_ST.ZEN.pdf
+      function downloadPDF() {
+        const element = document.getElementById("invoice-template");
+        const invNum = document.getElementById("previewInvoiceNum").innerText; // Format: 007-SEP26
+
+        // Format Ulang ke: SEP26-007_INVOICE_ST.ZEN
+        let filename = `INVOICE_ST.ZEN.pdf`;
+        const parts = invNum.split("-");
+        if (parts.length === 2) {
+          const numberSeq = parts[0]; // e.g., 007
+          const monthYearCode = parts[1]; // e.g., SEP26
+          filename = `${monthYearCode}-${numberSeq}_INVOICE_ST.ZEN.pdf`;
+        }
+
+        const opt = {
+          margin: 0,
+          filename: filename,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        };
+
+        html2pdf().set(opt).from(element).save();
+      }
+
+      init();
+    </script>
+  </body>
+</html>
