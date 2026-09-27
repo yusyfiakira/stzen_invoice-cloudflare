@@ -18,11 +18,11 @@
         font-family: "Poppins", sans-serif;
       }
 
-      /* Kunci ukuran presisi A4 agar MURNI 1 Halaman */
+      /* Kunci ukuran presisi A4 MURNI 1 HALAMAN TANPA NGEBASS */
       .invoice-box {
         width: 210mm;
-        height: 297mm;
-        max-height: 297mm;
+        height: 296mm;
+        max-height: 296mm;
         background: white;
         position: relative;
         overflow: hidden;
@@ -33,10 +33,10 @@
         position: absolute;
         top: 0;
         right: 0;
-        width: 300px;
-        height: 130px;
+        width: 280px;
+        height: 120px;
         background: #5ebb73;
-        border-bottom-left-radius: 130px;
+        border-bottom-left-radius: 120px;
         z-index: 1;
       }
 
@@ -44,23 +44,23 @@
         position: absolute;
         bottom: 0;
         left: 0;
-        width: 240px;
-        height: 130px;
+        width: 220px;
+        height: 120px;
         background: #5ebb73;
-        border-top-right-radius: 130px;
+        border-top-right-radius: 120px;
         z-index: 1;
       }
 
       .paid-stamp {
         position: absolute;
         right: 10px;
-        top: -60px;
+        top: -55px;
         transform: rotate(-12deg);
         border: 4px solid rgba(114, 187, 138, 0.75);
         color: rgba(114, 187, 138, 0.85);
-        font-size: 34px;
+        font-size: 32px;
         font-weight: 800;
-        padding: 2px 18px;
+        padding: 2px 16px;
         border-radius: 12px;
         letter-spacing: 4px;
         pointer-events: none;
@@ -245,33 +245,33 @@
       >
         <div
           id="invoice-template"
-          class="invoice-box p-10 shadow-2xl my-2 text-gray-800 flex flex-col justify-between"
+          class="invoice-box p-8 shadow-2xl my-2 text-gray-800 flex flex-col justify-between"
         >
-          <!-- HEADER & TABLE AREA -->
-          <div class="flex-grow flex flex-col">
+          <!-- TOP & TABLE AREA -->
+          <div class="flex-grow flex flex-col overflow-hidden">
             <div class="top-right-curve">
               <span
-                class="absolute top-8 right-12 text-white font-extrabold text-4xl tracking-wider"
+                class="absolute top-6 right-10 text-white font-extrabold text-3xl tracking-wider"
                 >Invoice</span
               >
             </div>
 
-            <div class="flex items-center gap-3 mb-8 relative z-10">
+            <div class="flex items-center gap-3 mb-6 relative z-10">
               <div
                 id="logoContainer"
-                class="h-12 flex items-center justify-center"
+                class="h-10 flex items-center justify-center"
               ></div>
-              <span class="text-2xl font-bold text-green-600 tracking-wide"
+              <span class="text-xl font-bold text-green-600 tracking-wide"
                 >st.zen</span
               >
             </div>
 
-            <div class="grid grid-cols-2 gap-8 mb-8 relative z-10">
+            <div class="grid grid-cols-2 gap-6 mb-6 relative z-10">
               <div>
-                <h4 class="font-bold text-sm mb-1">Invoice to :</h4>
+                <h4 class="font-bold text-xs mb-0.5">Invoice to :</h4>
                 <p
                   id="previewClientName"
-                  class="text-lg font-bold text-green-600 mb-0.5"
+                  class="text-base font-bold text-green-600 mb-0.5"
                 >
                   Test
                 </p>
@@ -283,7 +283,7 @@
                 </p>
               </div>
               <div>
-                <h4 class="font-bold text-sm mb-1">Invoice detail :</h4>
+                <h4 class="font-bold text-xs mb-0.5">Invoice detail :</h4>
                 <div class="space-y-0.5 text-gray-700 font-medium text-xs">
                   <p>Number : <span id="previewInvoiceNum">Loading...</span></p>
                   <p>Due date : <span id="previewDueDate">27/09/2026</span></p>
@@ -291,18 +291,18 @@
               </div>
             </div>
 
-            <!-- Tabel Produk dengan Kontainer Terkunci -->
-            <div class="relative z-10 mb-4 flex-grow overflow-hidden">
+            <!-- TABEL DENGAN MAKSIMAL TINGGI TERLINDUNGI -->
+            <div class="relative z-10 mb-2 flex-grow overflow-hidden">
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr
-                    class="bg-[#5ebb73] text-white font-bold text-xs uppercase tracking-wider"
+                    class="bg-[#5ebb73] text-white font-bold text-[11px] uppercase tracking-wider"
                   >
-                    <th class="p-2 text-center w-10">NO</th>
+                    <th class="p-2 text-center w-8">NO</th>
                     <th class="p-2">PRODUCT</th>
-                    <th class="p-2 text-center w-16">QTY</th>
-                    <th class="p-2 text-center w-20">PRICE</th>
-                    <th class="p-2 text-center w-20">TOTAL</th>
+                    <th class="p-2 text-center w-12">QTY</th>
+                    <th class="p-2 text-center w-16">PRICE</th>
+                    <th class="p-2 text-center w-16">TOTAL</th>
                   </tr>
                 </thead>
                 <tbody
@@ -313,9 +313,9 @@
             </div>
           </div>
 
-          <!-- FOOTER & TOTALS AREA (TERKUNCI DI BAWAH) -->
-          <div class="shrink-0 pt-2">
-            <div class="relative z-10 flex justify-end mb-8">
+          <!-- FOOTER TERKUNCI PERMANEN DI BAWAH -->
+          <div class="shrink-0 pt-2 relative z-10">
+            <div class="flex justify-end mb-6">
               <div class="w-1/2 relative">
                 <div id="previewPaidStamp" class="paid-stamp">PAID</div>
                 <div
@@ -332,7 +332,7 @@
                 </div>
 
                 <div
-                  class="mt-2 bg-[#5ebb73] text-white flex justify-between items-center px-4 py-2 font-bold text-sm rounded-sm"
+                  class="mt-2 bg-[#5ebb73] text-white flex justify-between items-center px-3 py-1.5 font-bold text-xs rounded-sm"
                 >
                   <span>TOTAL</span>
                   <span id="previewGrandTotal">RP0,00</span>
@@ -340,16 +340,16 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-8 items-end relative z-10 pb-2">
-              <div class="space-y-1 text-[11px] font-semibold text-gray-700">
-                <h4 class="font-bold text-xs mb-1.5">Payment Info :</h4>
-                <p class="flex items-center gap-2">
+            <div class="grid grid-cols-2 gap-6 items-end pb-2">
+              <div class="space-y-1 text-[10px] font-semibold text-gray-700">
+                <h4 class="font-bold text-xs mb-1">Payment Info :</h4>
+                <p class="flex items-center gap-1.5">
                   <span class="text-green-600">📞</span> +62882-0034-57148
                 </p>
-                <p class="flex items-center gap-2">
+                <p class="flex items-center gap-1.5">
                   <span class="text-green-600">✉️</span> akieera.store@gmail.com
                 </p>
-                <p class="flex items-center gap-2">
+                <p class="flex items-center gap-1.5">
                   <span class="text-green-600">📍</span> Indonesia
                 </p>
               </div>
@@ -357,10 +357,10 @@
               <div class="text-center">
                 <div
                   id="signatureContainer"
-                  class="h-12 flex items-center justify-center mb-1"
+                  class="h-10 flex items-center justify-center mb-1"
                 ></div>
-                <div class="w-40 mx-auto border-b border-gray-300 mb-1"></div>
-                <p class="font-medium text-xs text-gray-700">Zen.</p>
+                <div class="w-36 mx-auto border-b border-gray-300 mb-0.5"></div>
+                <p class="font-medium text-[10px] text-gray-700">Zen.</p>
               </div>
             </div>
           </div>
@@ -415,22 +415,38 @@
         return isoStr;
       }
 
+      // FETCH KV PERSISTEN BERSAMA DISABLING CACHE
       async function fetchInvoiceNumberCloud(dueDateStr, action = "get") {
         const monthCode = getMonthCodeFromDate(dueDateStr);
         try {
           document.getElementById("cloudStatus").innerText = "⏳ Syncing...";
           const res = await fetch(
-            `/api/counter?action=${action}&month=${monthCode}`,
+            `/api/counter?action=${action}&month=${monthCode}&t=${Date.now()}`,
+            { cache: 'no-store' }
           );
           const data = await res.json();
 
-          document.getElementById("cloudStatus").innerText = "☁️ Cloud Sync";
-          const formattedNum = String(data.counter).padStart(3, "0");
-          return `${formattedNum}-${data.month}`;
+          if (data.counter) {
+            document.getElementById("cloudStatus").innerText = "☁️ Cloud Sync";
+            localStorage.setItem("stzen_backup_counter", data.counter);
+            localStorage.setItem("stzen_backup_month", data.month);
+
+            const formattedNum = String(data.counter).padStart(3, "0");
+            return `${formattedNum}-${data.month}`;
+          } else {
+            throw new Error("Bad Response");
+          }
         } catch (err) {
-          console.error("Cloud Error, fallback to local:", err);
+          console.error("Cloud KV Error, fallback to local:", err);
           document.getElementById("cloudStatus").innerText = "⚠️ Offline Mode";
-          return `001-${monthCode}`;
+
+          let localCounter = parseInt(localStorage.getItem("stzen_backup_counter") || "1", 10);
+          if (action === "increment") localCounter += 1;
+          if (action === "reset") localCounter = 1;
+          localStorage.setItem("stzen_backup_counter", localCounter);
+
+          const formattedNum = String(localCounter).padStart(3, "0");
+          return `${formattedNum}-${monthCode}`;
         }
       }
 
@@ -513,19 +529,19 @@
 
           tbody.innerHTML += `
             <tr>
-                <td class="p-2 text-center">${index + 1}</td>
-                <td class="p-2">${item.name || "-"}</td>
-                <td class="p-2 text-center">${item.qty}</td>
-                <td class="p-2 text-center">${priceLabel}</td>
-                <td class="p-2 text-center">${totalLabel}</td>
+                <td class="p-1.5 text-center">${index + 1}</td>
+                <td class="p-1.5">${item.name || "-"}</td>
+                <td class="p-1.5 text-center">${item.qty}</td>
+                <td class="p-1.5 text-center">${priceLabel}</td>
+                <td class="p-1.5 text-center">${totalLabel}</td>
             </tr>
           `;
         });
 
-        // Selalu jaga minimal 4 baris agar visual rapi
-        const minRows = 4;
+        // Selalu pas dipasang minimal 3 baris
+        const minRows = 3;
         for (let i = items.length; i < minRows; i++) {
-          tbody.innerHTML += `<tr class="h-8"><td></td><td></td><td></td><td></td><td></td></tr>`;
+          tbody.innerHTML += `<tr class="h-6"><td></td><td></td><td></td><td></td><td></td></tr>`;
         }
 
         calculateTotals(subtotalCalculated);
@@ -683,7 +699,7 @@
         autoLoadImage(
           "signatureContainer",
           "ttd",
-          `<span class="font-serif italic text-2xl font-bold tracking-wider text-gray-800">yeyell</span>`,
+          `<span class="font-serif italic text-xl font-bold tracking-wider text-gray-800">yeyell</span>`,
         );
 
         renderInputForm();
@@ -706,7 +722,7 @@
           margin: 0,
           filename: filename,
           image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
+          html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         };
 
